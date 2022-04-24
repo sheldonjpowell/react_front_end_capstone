@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
 
-export default function Signup() {
+export default function Signup(props) {
     let navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -9,7 +9,7 @@ export default function Signup() {
         let password = e.target.password.value;
         let confirmPass = e.target.confirmPass.value;
         if (password !== confirmPass){
-            console.log("HB said, 'passwords don't match, no entry!'")
+            props.flashMessage("HB said, 'passwords don't match, no entry!'", "warning")
             // navigate("/Signup")
         } else{
             let myHeaders = new Headers();
@@ -27,8 +27,12 @@ export default function Signup() {
                 body: data
             }).then(res => res.json())
             .then(data => {
-                console.log(data)
-                navigate('/')
+                if (data.error){
+                    props.flashMessage(data.error, 'danger')
+                } else {
+                    props.flashMessage(`${data.username} has registered.`, 'success')
+                    navigate('/')
+                }
             })
         }
     }
